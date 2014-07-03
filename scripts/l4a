@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+from pylog4all import client
+
+if __name__ == '__main__':
+    client.main()
