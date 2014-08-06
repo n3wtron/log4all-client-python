@@ -45,7 +45,7 @@ def add_common_parser_options(parser):
     parser.add_option("--user-setup", dest="user_setup", action="store_true", help="Setup user configuration")
     settings_group = OptionGroup(parser,'Settings',
                                  '**OPTIONAL** if user configuration is setted (--user-setup option )')
-    settings_group.add_option("-s", "--log4all-server", dest="server", action="store",
+    settings_group.add_option("--log4all-server", dest="server", action="store",
                       help="log4all server url (mandatory if it's not configured by --user-setup)")
     settings_group.add_option("-a", "--application", dest="application", action="store",
                       help="log4all application (mandatory if it's not configured by --user-setup)")

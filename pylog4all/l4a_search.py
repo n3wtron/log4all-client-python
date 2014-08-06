@@ -1,11 +1,13 @@
 import logging
 from optparse import OptionParser
 import sys
+from dateutil import parser as dtparser
+
 from pylog4all.search import search_log
 from pylog4all.client import Log4allClient
 from pylog4all import config
 from pylog4all.util import add_common_parser_options
-from dateutil import parser as dtparser
+
 
 __author__ = 'Igor Maculan <n3wtron@gmail.com>'
 
@@ -16,13 +18,11 @@ def main():
     add_common_parser_options(parser)
 
     # SEARCH
-    parser.add_option("-q", "--query", dest="action", action="store_const", const='search',
-                                help="log4all search query")
-    parser.add_option("--since", dest="since", action="store", help="search since")
-    parser.add_option("--to", dest="to", action="store", help="search to")
+    parser.add_option("-s", "--since", dest="since", action="store", help="search since")
+    parser.add_option("-t", "--to", dest="to", action="store", help="search to")
     parser.add_option("--full", dest="full_log", action="store_true", help="log with stacktrace")
-    parser.add_option("--num", dest="search_query_num", action="store",
-                                help="number of results", default="10")
+    parser.add_option("-n", "--num", dest="result_per_page", action="store",
+                      help="number of results", default="10")
 
     (options, args) = parser.parse_args(sys.argv[1:])
     if options.verbose:
@@ -45,7 +45,13 @@ def main():
             print ('--since and --to are mandatory in search')
             parser.print_help()
             exit(-2)
-        search_log(cl, dtparser.parse(options.since), dtparser.parse(options.to), args, options.full_log)
+        if len(args) == 2:
+            query = args[1]
+        else:
+            query = ''
+        search_log(cl, dtparser.parse(options.since), dtparser.parse(options.to), query, options.full_log,
+                   int(options.result_per_page))
+
 
 if __name__ == '__main__':
     main()

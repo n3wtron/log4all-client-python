@@ -1,12 +1,15 @@
 import logging
 from optparse import OptionParser
 import sys
+
 from pylog4all.search import tail_log
 from pylog4all.client import Log4allClient
 from pylog4all import config
 from pylog4all.util import add_common_parser_options
 
+
 __author__ = 'Igor Maculan <n3wtron@gmail.com>'
+
 
 def main():
     usage = "usage: %prog [options] [log_text|search_query]"
@@ -33,7 +36,12 @@ def main():
             exit(-2)
 
         cl = Log4allClient(server)
-        tail_log(cl,args,options.full_log)
+        if len(args) == 2:
+            qry = args[1]
+        else:
+            qry = ''
+        tail_log(cl, qry, options.full_log)
+
 
 if __name__ == '__main__':
     main()
