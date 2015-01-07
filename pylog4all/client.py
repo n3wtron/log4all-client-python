@@ -53,10 +53,10 @@ class Log4allClient(object):
             return logs
 
     def tail_log(self, query, since, full=False):
-        params = urllib.urlencode({
+        params = {
             'query': query,
-            'dt_since': int(time.mktime(since.timetuple()))
-        })
+            'dt_since': int(time.mktime(since.timetuple()))*1000
+        }
         req = urllib2.Request(self.host + "/api/logs/tail", json.dumps(params), {'Content-Type': 'application/json'})
         res = urllib2.urlopen(req)
         return json.load(res)

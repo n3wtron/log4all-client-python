@@ -30,9 +30,9 @@ def add_log_line(log4all_client, application, level, log_file_line):
     else:
         # probable stack trace
         if log_stack is None:
-            log_stack = [log_file_line]
+            log_stack = log_file_line
         else:
-            log_stack.append(log_file_line)
+            log_stack+=log_file_line
     success, error = log4all_client.add_log(application, log_level, log_line, log_stack)
     if not success:
         sys.stderr.write("Log not added:" + error + '\n')
@@ -45,8 +45,7 @@ def add_log(cl, application, level, log, log_file=None):
     success, error = False, ''
     # check if is piped
     if not sys.stdin.isatty():
-        stdin_lines = sys.stdin.readlines()
-        stack = [line.rstrip() for line in stdin_lines]
+        stack = sys.stdin.read()
         success, error = cl.add_log(application, level, log, stack)
         if not success:
             sys.stderr.write("Log not added:" + error + '\n')

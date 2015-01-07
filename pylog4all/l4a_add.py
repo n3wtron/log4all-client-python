@@ -9,7 +9,7 @@ from pylog4all.util import add_common_parser_options
 
 
 def main():
-    usage = "usage: %prog [options] [log_text|search_query]"
+    usage = "usage: %prog [options] [log_text]"
     parser = OptionParser(usage=usage, )
     add_common_parser_options(parser)
 
