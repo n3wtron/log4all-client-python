@@ -16,30 +16,37 @@ def get_level_from_string(log_file_line):
     return None
 
 
-def add_log_line(log4all_client, application, level, log_file_line):
+def add_log_line(log4all_client, application, level, log_file_lines):
     log_stack = None
     log_level = level
-    log_line = None
-    if log_file_line[0] != '\t':
-        # new log line
-        log_line = log_file_line
-        log_level = get_level_from_string(log_file_line)
-        if log_level is None:
-            log_level = level
-        log_stack = None
-    else:
-        # probable stack trace
-        if log_stack is None:
-            log_stack = log_file_line
+    log_message = None
+    for log_file_line in log_file_lines:
+        if log_file_line[0] != '\t':
+            # new log line
+            if log_message is not None:
+                success, error = log4all_client.add_log(application, log_level, log_message, log_stack)
+                if not success:
+                    sys.stderr.write("Log not added:" + error + '\n')
+            log_message = log_file_line
+            log_level = get_level_from_string(log_file_line)
+            if log_level is None:
+                log_level = level
+            log_stack = None
         else:
-            log_stack += log_file_line
-    success, error = log4all_client.add_log(application, log_level, log_line, log_stack)
-    if not success:
-        sys.stderr.write("Log not added:" + error + '\n')
+            # probable stack trace
+            if log_stack is None:
+                log_stack = log_file_line
+            else:
+                log_stack += log_file_line
+
+    if log_message is not None:
+        success, error = log4all_client.add_log(application, log_level, log_message, log_stack)
+        if not success:
+            sys.stderr.write("Log not added:" + error + '\n')
 
 
 def add_log(cl, application, level, log, log_file=None):
-    if log is None:
+    if log is None and log_file is None:
         sys.stderr.write("Log message is mandatory \n")
         sys.exit(-1)
     success, error = False, ''
@@ -55,8 +62,7 @@ def add_log(cl, application, level, log, log_file=None):
             log_file = open(log_file)
             log_file_lines = log_file.readlines()
             try:
-                for log_file_line in log_file_lines:
-                    add_log_line(cl, application, log_file_line)
+                add_log_line(cl, application, level, log_file_lines)
             finally:
                 log_file.close()
         else:
